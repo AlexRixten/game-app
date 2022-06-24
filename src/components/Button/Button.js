@@ -6,7 +6,7 @@ export default function Button(props) {
     const [active, setActive] = useState(false)
 
     useEffect(() => {
-        setActive(false)
+        setActive(false) 
         props.data.map(item => {
             if (item === props.title) {
                 setActive(true) 
@@ -25,7 +25,7 @@ export default function Button(props) {
                 setActive(!active)
 
             } else {
-                setActive(!active)
+                setActive(false)
             }
         }
     }
