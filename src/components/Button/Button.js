@@ -6,6 +6,7 @@ export default function Button(props) {
     const [active, setActive] = useState(false)
 
     useEffect(() => {
+        setActive(false)
         props.data.map(item => {
             if (item === props.title) {
                 setActive(true) 

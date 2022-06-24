@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from "react";
 import axios from "axios"
-import { IoMdColorWand, IoMdClose } from "react-icons/io";
+import { IoMdColorWand, IoMdClose, IoMdRefresh } from "react-icons/io";
 import './App.css'
 import Button from "./components/Button/Button";
 
@@ -133,7 +133,16 @@ function App() {
         ? <div className="ticket">
           <div className="ticket_top">
             <h1 className="ticket_title">Билет 1</h1>
-            <IoMdColorWand onClick={magicClick} className="ticket-magic" />
+            <div className="ticket_magic_btns">
+              <IoMdRefresh
+                className="ticket_magic refresh"
+                onClick={() => {
+                  setDataOne([])
+                  setDataTwo([])
+                }}
+              />
+              <IoMdColorWand onClick={magicClick} className="ticket_magic" />
+            </div>
           </div>
           <div className="field">
             <div className="field_title">
@@ -169,20 +178,23 @@ function App() {
           </div>
           <div>
             <button className="ticket_result" onClick={reportData}>Показать результат</button>
-            {errorObj ? <p style={{ color: 'red', fontSize: 10, textAlign: 'center', marginTop:  10 }}>{errorObj}</p> : null}
+            {errorObj ? <p style={{ color: 'red', fontSize: 10, textAlign: 'center', marginTop: 10 }}>{errorObj}</p> : null}
           </div>
         </div>
         : <div className="ticket">
           <div className="ticket_top">
             <h1 className="ticket_title">Билет 1</h1>
-            <IoMdClose
-              className="ticket-magic"
-              onClick={() => {
-                setResult(!result)
-                setDataOne([])
-                setDataTwo([])
-              }}
-            />
+            <div className="ticket_magic_btns">
+              <IoMdClose
+                className="ticket_magic"
+                onClick={() => {
+                  setResult(!result)
+                  setDataOne([])
+                  setDataTwo([])
+                }}
+              />
+            </div>
+
           </div>
           <p className="field_description">{resultText}</p>
         </div>
