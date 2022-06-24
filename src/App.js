@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios"
 import { IoMdColorWand, IoMdClose } from "react-icons/io";
 import './App.css'
@@ -7,8 +7,25 @@ import Button from "./components/Button/Button";
 
 const listNumber = (n) => Array.from({ length: n }, (v, k) => k + 1); // функция для создания кнопок
 
-const randomNumber = (length, max) => [...new Array(length)]
-  .map(() => Math.round(Math.random() * max)); // создание массивов с рандомными значениями
+// const randomNumber = (length, max) => [...new Array(length)]
+//   .map(() => 1 + (Math.round(Math.random() * max))); // создание массивов с рандомными значениями
+
+const randomNumberArr = (len, max) => {
+  var numReserve = []
+  while (numReserve.length < len) {
+    var randomNumber = Math.ceil(Math.random() * max);
+    var found = false;
+    for (var i = 0; i < numReserve.length; i++) {
+      if (numReserve[i] === randomNumber) {
+        found = true;
+        break;
+      }
+    }
+    if (!found) { numReserve[numReserve.length] = randomNumber; }
+  }
+
+  return numReserve
+}
 
 const intersect = (arr1, arr2) => { // функция для поиска совпадений
   let result = []
@@ -35,40 +52,69 @@ function App() {
   const [dataOne, setDataOne] = useState([])
   const [dataTwo, setDataTwo] = useState([])
 
+  const [errorObj, setErrorObj] = useState('')
+
   const [result, setResult] = useState(false)
   const [resultText, setResultText] = useState('К сожалению, сегодня не ваш день!')
 
   const fieldOne = listNumber(19)
   const fieldTwo = listNumber(2)
-  const randomNumberFieldOne = randomNumber(50, 100)
-  const randomNumberFieldTwo = randomNumber(2, 6)
+  const randomNumberFieldOne = randomNumberArr(8, 40)
+  const randomNumberFieldTwo = randomNumberArr(1, 2)
+
+  useEffect(() => {
+    if (dataOne.length <= 8 || dataTwo.length <= 1) {
+      setErrorObj('')
+      setResultText('К сожалению, сегодня не ваш день!')
+    }
+  }, [setErrorObj, dataOne, dataTwo])
+
+  const postData = (url, dataOne, dataTwo, win) => {
+    axios.post('url', {
+      selectedNumber: {
+        firstField: dataOne,
+        secondField: dataTwo
+      },
+      isTicketWon: win,
+    })
+      .then(function (response) {
+        console.log(response);
+      })
+      .catch(function (error) {
+        if (error.response) {
+          setTimeout(() => {
+            axios.post('url', {
+              selectedNumber: {
+                firstField: dataOne,
+                secondField: dataTwo
+              },
+              isTicketWon: win,
+            })
+          }, 2000)
+        }
+      });
+  }
 
   const reportData = () => {
     const sumOne = intersect(randomNumberFieldOne, dataOne)
     const sumTwo = intersect(randomNumberFieldTwo, dataTwo)
     let win = false
 
+    const url = 'http://api/stoLoto/v1/';
+
     if (dataOne.length === 8 && dataTwo.length === 1) {
+
       if (sumOne >= 4 || (sumOne >= 3 && sumTwo >= 1)) {
         setResultText('Ого, вы выиграли! Поздравляем!')
         win = true
       }
 
-      axios.post('url', {
-        selectedNumber: {
-          firstField: dataOne,
-          secondField: dataTwo
-        },
-        isTicketWon: win,
-      })
-        .then(function (response) {
-          console.log(response);
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
-
+      postData(url, dataOne, dataTwo, win)
       setResult(!result)
+    }
+    else {
+      setErrorObj('Вам необходимо отметить все поля')
+      setResultText('К сожалению, сегодня не ваш день!')
     }
   }
 
@@ -76,8 +122,8 @@ function App() {
     if (dataOne.length > 0 || dataTwo.length > 0) {
       return
     } else {
-      setDataOne(randomNumber(8, 19))
-      setDataTwo(randomNumber(1, 2))
+      setDataOne(randomNumberArr(8, 19))
+      setDataTwo(randomNumberArr(1, 2))
     }
   }
 
@@ -121,7 +167,10 @@ function App() {
               ))}
             </div>
           </div>
-          <button className="ticket_result" onClick={reportData}>Показать результат</button>
+          <div>
+            <button className="ticket_result" onClick={reportData}>Показать результат</button>
+            {errorObj ? <p style={{ color: 'red', fontSize: 10, textAlign: 'center', marginTop:  10 }}>{errorObj}</p> : null}
+          </div>
         </div>
         : <div className="ticket">
           <div className="ticket_top">

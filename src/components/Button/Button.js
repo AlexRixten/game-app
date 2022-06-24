@@ -8,7 +8,7 @@ export default function Button(props) {
     useEffect(() => {
         props.data.map(item => {
             if (item === props.title) {
-                setActive(!active) 
+                setActive(true) 
             }
         })
     },[props.data])
@@ -24,7 +24,7 @@ export default function Button(props) {
                 setActive(!active)
 
             } else {
-                return
+                setActive(!active)
             }
         }
     }

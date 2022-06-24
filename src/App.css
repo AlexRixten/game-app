@@ -1,6 +1,8 @@
+.App{
+    padding: 20px 12px;
+}
 .ticket {
     min-height: 370px;
-    margin: 20px 12px;
     padding: 14px 11px 24px;
     background: #FFFFFF;
     border-radius: 3px;
